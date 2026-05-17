@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroTech - Đánh Giá Năng Lực Giao Diện & DOM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --mau-chinh: #c27a5f;
+            --mau-chinh-dam: #aa654a;
+            --mau-chinh-nhat: #f9ebe5;
+            --mau-phu: #6f93b0;
+            --mau-toi: #362923;
+            --mau-nen: #eddcd2;
+            --mau-trang: #ffffff;
+            --mau-vien: #dcbfae;
+            --mau-chu: #4b3b33;
+            --mau-chu-nhat: #806d63;
+            
+            --bong-nhe: 0 4px 12px rgba(75, 59, 51, 0.08), inset 0 2px 3px rgba(255, 255, 255, 0.9);
+            --bong-vua: 0 14px 28px rgba(75, 59, 51, 0.12), inset 0 2px 4px rgba(255, 255, 255, 0.9);
+            --bong-dam: 0 24px 48px rgba(75, 59, 51, 0.18), inset 0 2px 6px rgba(255, 255, 255, 0.9);
+            --bong-nut: 0 6px 16px rgba(194, 122, 95, 0.45), inset 0 -3px 0 rgba(0, 0, 0, 0.15), inset 0 3px 0 rgba(255, 255, 255, 0.3);
+            --bong-lom: inset 2px 2px 8px rgba(75, 59, 51, 0.14), inset -2px -2px 6px rgba(255, 255, 255, 0.9);
+            
+            --bo-goc: 24px;
+            --bo-goc-lon: 32px;
+            --bo-goc-nho: 16px;
+            --bo-goc-tron: 9999px;
+            --chuyen-dong: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #eddcd2 0%, #dbcbbf 100%);
+            color: var(--mau-chu);
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(111, 147, 176, 0.25) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(50px);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(194, 122, 95, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(60px);
+            pointer-events: none;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(237, 220, 210, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 16px rgba(75, 59, 51, 0.05);
+        }
+
+        .header-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 22px;
+            color: var(--mau-toi);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--mau-chinh), var(--mau-phu));
+            border-radius: var(--bo-goc-nho);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mau-trang);
+            box-shadow: 0 6px 12px rgba(194, 122, 95, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .desktop-nav {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.35);
+            padding: 6px;
+            border-radius: var(--bo-goc-tron);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: var(--bong-nhe);
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: var(--bo-goc-tron);
+            color: var(--mau-chu-nhat);
+            transition: var(--chuyen-dong);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--mau-trang);
+            color: var(--mau-toi);
+            box-shadow: var(--bong-nhe);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            position: relative;
+            width: 46px;
+            height: 46px;
+            border-radius: var(--bo-goc-tron);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--mau-toi);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--chuyen-dong);
+            box-shadow: var(--bong-nhe);
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-2px);
+            background: var(--mau-trang);
+            border-color: var(--mau-chinh);
+            color: var(--mau-chinh);
+            box-shadow: 0 8px 16px rgba(194, 122, 95, 0.25);
+        }
+
+        .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--mau-chinh);
+            color: var(--mau-trang);
+            font-size: 10px;
+            font-weight: 800;
+            width: 20px;
+            height: 20px;
+            border-radius: var(--bo-goc-tron);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--mau-trang);
+            box-shadow: 0 2px 6px rgba(194, 122, 95, 0.4);
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 32px 0 64px 0;
+        }
+
+        .carousel {
+            position: relative;
+            height: 420px;
+            background-color: #f7e3d7;
+            border-radius: var(--bo-goc-lon);
+            overflow: hidden;
+            box-shadow: var(--bong-dam);
+            margin-bottom: 40px;
+            border: 4px solid var(--mau-trang);
+        }
+
+        .carousel::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -10%;
+            width: 120%;
+            height: 60px;
+            background: #dbcbbf;
+            border-radius: 50%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .carousel-track {
+            height: 100%;
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.85;
+        }
+
+        .carousel-content {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(247, 227, 215, 0.98) 0%, rgba(247, 227, 215, 0.55) 50%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 48px 64px;
+            color: var(--mau-toi);
+            z-index: 2;
+        }
+
+        .carousel-title {
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .carousel-subtitle {
+            font-size: 15px;
+            color: var(--mau-chu);
+            max-width: 460px;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: var(--bo-goc-tron);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: var(--mau-toi);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--bong-vua);
+            z-index: 10;
+            opacity: 0;
+            transition: var(--chuyen-dong);
+        }
+
+        .carousel:hover .carousel-btn {
+            opacity: 1;
+        }
+
+        .carousel-btn:hover {
+            background: var(--mau-trang);
+            color: var(--mau-chinh);
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 0 12px 24px rgba(194, 122, 95, 0.3);
+        }
+
+        .carousel-btn.prev { left: 24px; }
+        .carousel-btn.next { right: 24px; }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 40px;
+            left: 64px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: var(--bo-goc-tron);
+            background: rgba(75, 59, 51, 0.25);
+            border: none;
+            transition: var(--chuyen-dong);
+        }
+
+        .carousel-dot.active {
+            width: 30px;
+            background: var(--mau-chinh);
+            box-shadow: 0 4px 8px rgba(194, 122, 95, 0.4);
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--mau-toi);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(15px);
+            border-radius: var(--bo-goc-lon);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: var(--chuyen-dong);
+            box-shadow: var(--bong-vua);
+            padding: 16px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            background: var(--mau-trang);
+            box-shadow: var(--bong-dam);
+            border-color: rgba(194, 122, 95, 0.4);
+        }
+
+        .product-img-wrap {
+            position: relative;
+            padding-top: 75%;
+            background: #eddcd2;
+            overflow: hidden;
+            border-radius: var(--bo-goc);
+            box-shadow: var(--bong-lom);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .product-img-wrap img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--chuyen-dong);
+            padding: 8px;
+        }
+
+        .product-card:hover .product-img-wrap img {
+            transform: scale(1.05);
+        }
+
+        .category-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--mau-chinh);
+            padding: 4px 10px;
+            border-radius: var(--bo-goc-tron);
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--bong-nhe);
+        }
+
+        .product-info {
+            padding: 16px 4px 4px 4px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--mau-toi);
+            margin-bottom: 6px;
+            line-height: 1.4;
+            transition: var(--chuyen-dong);
+        }
+
+        .product-desc {
+            font-size: 12px;
+            color: var(--mau-chu-nhat);
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(75, 59, 51, 0.08);
+        }
+
+        .price {
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--mau-chinh);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: var(--bo-goc-tron);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transition: var(--chuyen-dong);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d28c70, var(--mau-chinh));
+            color: var(--mau-trang);
+            box-shadow: var(--bong-nut);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(194, 122, 95, 0.5);
+        }
+
+        footer {
+            background-color: var(--mau-toi);
+            color: #bfaea5;
+            padding: 40px 0 24px 0;
+            border-radius: var(--bo-goc-lon) var(--bo-goc-lon) 0 0;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .desktop-nav {
+                display: none;
+            }
+            .carousel {
+                height: 280px;
+            }
+            .carousel::after {
+                bottom: -20px;
+                height: 40px;
+            }
+            .carousel-content {
+                padding: 24px 32px;
+            }
+            .carousel-title {
+                font-size: 24px;
+            }
+            .carousel-subtitle {
+                font-size: 12px;
+            }
+            .carousel-dots {
+                left: 32px;
+                bottom: 30px;
+            }
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-wrap">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <span>ElectroTech</span>
+            </a>
+
+            <nav class="desktop-nav">
+                <a href="#" class="nav-link active">Cửa hàng</a>
+                <a href="#" class="nav-link">Liên hệ</a>
+                <a href="#" class="nav-link">Quản trị</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="icon-btn">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="badge">3</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="carousel">
+            <div id="duongRayAnhSlide" class="carousel-track">
+                <div class="carousel-slide">
+                    <img src="image/photo-1498049794561-7780e7231661.avif" alt="Slide 1">
+                    <div class="carousel-content">
+                        <h2 class="carousel-title">Không Gian Làm Việc 2026</h2>
+                        <p class="carousel-subtitle">Trải nghiệm thiết bị ngoại vi, bàn phím cơ đỉnh cao và màn hình đồ họa thế hệ mới nhất.</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="image/photo-1505740420928-5e560c06d30e.avif" alt="Slide 2">
+                    <div class="carousel-content">
+                        <h2 class="carousel-title">Lựa Chọn Công Nghệ Mới</h2>
+                        <p class="carousel-subtitle">Trang bị bộ xử lý mượt mà nâng tầm tối đa hiệu suất lập trình và làm việc sáng tạo của bạn.</p>
+                    </div>
+                </div>
+                <div class="carousel-slide">
+                    <img src="image/photo-1510557880182-3d4d3cba35a5.avif" alt="Slide 3">
+                    <div class="carousel-content">
+                        <h2 class="carousel-title">Âm Thanh Thực Tế</h2>
+                        <p class="carousel-subtitle">Trải nghiệm những mẫu tai nghe chống ồn tốt nhất giúp bạn tập trung cao độ khi viết code.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="quayVeSlideTruoc()" class="carousel-btn prev">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button onclick="chuyenSlideKeTiep()" class="carousel-btn next">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            
+            <div class="carousel-dots">
+                <button class="carousel-dot active" onclick="denViTriSlide(0)"></button>
+                <button class="carousel-dot" onclick="denViTriSlide(1)"></button>
+                <button class="carousel-dot" onclick="denViTriSlide(2)"></button>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h3 class="section-title">Sản Phẩm Đổi Mới Nổi Bật</h3>
+        </div>
+
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-img-wrap">
+                    <img src="image/photo-1517336714731-489689fd1ca8.avif" alt="MacBook M3">
+                    <span class="category-tag">Laptop</span>
+                </div>
+                <div class="product-info">
+                    <h5 class="product-title">MacBook Pro M3 Max</h5>
+                    <p class="product-desc">Máy tính tối thượng dành cho nhà phát triển chuyên nghiệp với hiệu năng đỉnh cao từ Apple M3 Max.</p>
+                    <div class="product-footer">
+                        <span class="price">68.900.000 đ</span>
+                        <button class="btn btn-primary">
+                            <i class="fa-solid fa-cart-plus"></i> Mua ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-wrap">
+                    <img src="image/photo-1531297484001-80022131f5a1.avif" alt="iPhone 15">
+                    <span class="category-tag">Phụ kiện</span>
+                </div>
+                <div class="product-info">
+                    <h5 class="product-title">iPhone 15 Pro Max</h5>
+                    <p class="product-desc">Khung titan siêu nhẹ bền bỉ, camera zoom quang học chuyên nghiệp và vi xử lý mạnh mẽ hàng đầu thế giới.</p>
+                    <div class="product-footer">
+                        <span class="price">29.990.000 đ</span>
+                        <button class="btn btn-primary">
+                            <i class="fa-solid fa-cart-plus"></i> Mua ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-wrap">
+                    <img src="image/photo-1542751371-adc38448a05e.avif" alt="Sony Headphones">
+                    <span class="category-tag">Phụ kiện</span>
+                </div>
+                <div class="product-info">
+                    <h5 class="product-title">Sony WH-1000XM5 ANC</h5>
+                    <p class="product-desc">Thiết kế tinh xảo, chất âm đỉnh cao cùng khả năng cách âm chủ động hoàn hảo nhất phân khúc.</p>
+                    <div class="product-footer">
+                        <span class="price">7.490.000 đ</span>
+                        <button class="btn btn-primary">
+                            <i class="fa-solid fa-cart-plus"></i> Mua ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            
+        </div>
+    </footer>
+
+    <script>
+        var slideHienTai = 0;
+        var tongSoSlide = 3;
+        var henGioChuyenSlide;
+
+        function hienThiSlide(viTriMuonMo) {
+            if (viTriMuonMo >= tongSoSlide) {
+                slideHienTai = 0;
+            } else if (viTriMuonMo < 0) {
+                slideHienTai = tongSoSlide - 1;
+            } else {
+                slideHienTai = viTriMuonMo;
+            }
+            
+            var duongRayAnh = document.getElementById("duongRayAnhSlide");
+            if (duongRayAnh) {
+                duongRayAnh.style.transform = "translateX(-" + (slideHienTai * 100) + "%)";
+            }
+            
+            var danhSachChamTron = document.getElementsByClassName("carousel-dot");
+            var chiSoVongLap;
+            for (chiSoVongLap = 0; chiSoVongLap < danhSachChamTron.length; chiSoVongLap++) {
+                danhSachChamTron[chiSoVongLap].classList.remove("active");
+            }
+            if (danhSachChamTron[slideHienTai]) {
+                danhSachChamTron[slideHienTai].classList.add("active");
+            }
+        }
+
+        function chuyenSlideKeTiep() {
+            hienThiSlide(slideHienTai + 1);
+            lamMoiHenGioChuyenSlide();
+        }
+
+        function quayVeSlideTruoc() {
+            hienThiSlide(slideHienTai - 1);
+            lamMoiHenGioChuyenSlide();
+        }
+
+        function denViTriSlide(viTriMoi) {
+            hienThiSlide(viTriMoi);
+            lamMoiHenGioChuyenSlide();
+        }
+
+        function batTuDongChuyenSlide() {
+            henGioChuyenSlide = setInterval(function() {
+                hienThiSlide(slideHienTai + 1);
+            }, 4000);
+        }
+
+        function lamMoiHenGioChuyenSlide() {
+            clearInterval(henGioChuyenSlide);
+            batTuDongChuyenSlide();
+        }
+
+        window.onload = function () {
+            batTuDongChuyenSlide();
+        };
+    </script>
+</body>
+</html>
